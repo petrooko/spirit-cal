@@ -51,6 +51,7 @@ button {
     font-size: 20px;
     margin-top: 15px;
     cursor: pointer;
+    transition: background 0.3s;
 }
 button:hover {
     background: #0066cc;
@@ -59,6 +60,7 @@ button:hover {
     margin-top: 25px;
     font-size: 22px;
     font-weight: bold;
+    min-height: 60px;
 }
 </style>
 </head>
@@ -77,24 +79,43 @@ button:hover {
 </div>
 
 <script>
+function animateNumber(element, target, duration = 800) {
+    let start = 0;
+    const stepTime = 16; // приблизно 60 fps
+    const stepCount = Math.ceil(duration / stepTime);
+    const increment = (target - start) / stepCount;
+    let currentStep = 0;
+
+    const timer = setInterval(() => {
+        currentStep++;
+        start += increment;
+        element.innerHTML = start.toFixed(3) + " л води";
+        if (currentStep >= stepCount) {
+            element.innerHTML = target.toFixed(3) + " л води";
+            clearInterval(timer);
+        }
+    }, stepTime);
+}
+
 function calculate() {
     let A = parseFloat(document.getElementById('A').value);
     let B = parseFloat(document.getElementById('B').value);
     let V = parseFloat(document.getElementById('V').value);
+    const resultDiv = document.getElementById('result');
 
     if (!A || !B || !V) {
-        document.getElementById('result').innerHTML = "Заповни всі поля!";
+        resultDiv.innerHTML = "Заповни всі поля!";
         return;
     }
 
     if (B >= A) {
-        document.getElementById('result').innerHTML = "Бажана міцність повинна бути менша за початкову!";
+        resultDiv.innerHTML = "Бажана міцність повинна бути менша за початкову!";
         return;
     }
 
     let water = V * (A / B - 1);
-    document.getElementById('result').innerHTML =
-        "Потрібно додати: <br><span style='font-size:26px;'>" + water.toFixed(3) + " л води</span>";
+    resultDiv.innerHTML = "Потрібно додати: <br>";
+    animateNumber(resultDiv, water);
 }
 </script>
 </body>
