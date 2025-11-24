@@ -69,9 +69,9 @@ button:hover {
 <div class="container">
     <h1>Калькулятор розбавлення спирту</h1>
 
-    <input id="A" type="number" step="0.1" min="0.1" placeholder="Початкова міцність (%)">
-    <input id="B" type="number" step="0.1" min="0.1" placeholder="Бажана міцність (%)">
-    <input id="V" type="number" step="0.01" min="0.01" placeholder="Обʼєм спирту (л)">
+    <input id="A" type="number" step="0.1" min="0.1" placeholder="Початкова міцність (%)" inputmode="decimal">
+    <input id="B" type="number" step="0.1" min="0.1" placeholder="Бажана міцність (%)" inputmode="decimal">
+    <input id="V" type="number" step="0.01" min="0.01" placeholder="Обʼєм спирту (л)" inputmode="decimal">
 
     <button onclick="calculate()">Розрахувати</button>
 
@@ -89,9 +89,9 @@ function animateNumber(element, target, duration = 800) {
     const timer = setInterval(() => {
         currentStep++;
         start += increment;
-        element.innerHTML = start.toFixed(3) + " л води";
+        element.innerHTML = "Потрібно додати: <br><span style='font-size:26px;'>" + start.toFixed(3) + " л води</span>";
         if (currentStep >= stepCount) {
-            element.innerHTML = target.toFixed(3) + " л води";
+            element.innerHTML = "Потрібно додати: <br><span style='font-size:26px;'>" + target.toFixed(3) + " л води</span>";
             clearInterval(timer);
         }
     }, stepTime);
@@ -114,7 +114,6 @@ function calculate() {
     }
 
     let water = V * (A / B - 1);
-    resultDiv.innerHTML = "Потрібно додати: <br>";
     animateNumber(resultDiv, water);
 }
 </script>
