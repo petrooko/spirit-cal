@@ -3,223 +3,113 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-<title>Калькулятори — Вода & Брага</title>
+<title>Калькулятори спирту</title>
 
-<!-- Іконки / PWA-ish -->
-<link rel="apple-touch-icon" sizes="512x512" href="icon.png">
-<link rel="icon" href="icon.png">
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-<meta name="apple-mobile-web-app-title" content="Калькулятори" />
-<meta name="mobile-web-app-capable" content="yes" />
 
 <style>
-  :root{
-    --bg1:#071122;
-    --bg2:#0e1624;
-    --glass: rgba(255,255,255,0.04);
-    --muted: rgba(255,255,255,0.65);
-    --accent1:#00e0ff;
-    --accent2:#00b894;
-    --accent3:#6a9cff;
-    --card-radius:14px;
-  }
+:root{
+  --bg:#07080a;
+  --panel: rgba(255,255,255,0.02);
+  --glass-border: rgba(255,255,255,0.04);
+  --muted: rgba(230,240,250,0.35);
+  --accent: #00d0ff;
+  --accent-2:#55bfff;
+  --danger: #ff5c5c;
+  --radius: 18px;
+  --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", monospace;
+}
 
-  *{box-sizing:border-box}
-  html,body{height:100%;margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial;color:#eef2f6;}
-  body{
-    background: linear-gradient(120deg,var(--bg1),var(--bg2));
-    overflow:hidden;
-    -webkit-font-smoothing:antialiased;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    padding:18px;
-  }
+/* Base */
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;background:linear-gradient(180deg,#05060a 0%, #09101a 100%);font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial;color:#eaf6fb;-webkit-font-smoothing:antialiased}
+body{display:flex;align-items:center;justify-content:center;padding:0}
 
-  /* animated gradient overlay */
-  body::before{
-    content:"";
-    position:fixed; inset:0; z-index:-2;
-    background: linear-gradient(60deg, rgba(0,224,255,0.06), rgba(106,156,255,0.04), rgba(0,184,148,0.03));
-    mix-blend-mode: screen;
-    background-size: 300% 300%;
-    animation: moveBG 12s linear infinite;
-  }
-  @keyframes moveBG{
-    0%{background-position:0% 50%}
-    50%{background-position:100% 50%}
-    100%{background-position:0% 50%}
-  }
+/* App shell */
+.app {
+  width:100%;
+  height:100%;
+  border-radius:0;
+  padding:24px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.008));
+  box-shadow: inset 0 2px 0 rgba(255,255,255,0.02);
+  border:none;
+  position:relative;
+  overflow:auto;
+  display:flex;
+  flex-direction:column;
+}
 
-  /* App shell */
-  .app {
-    width:100%;
-    max-width:440px;
-    min-height:460px;
-    border-radius:18px;
-    padding:16px;
-    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-    box-shadow: 0 14px 50px rgba(2,6,23,0.7);
-    position:relative;
-    overflow:hidden;
-    border: 1px solid rgba(255,255,255,0.03);
-  }
+/* header */
+.header{display:flex;align-items:center;justify-content:center;gap:16px;margin-bottom:18px;font-size:24px;font-weight:700}
 
-  /* header */
-  .top {
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:12px;
-    margin-bottom:12px;
-  }
-  .brand {
-    display:flex;
-    gap:12px;
-    align-items:center;
-  }
-  .logo {
-    width:46px;height:46px;border-radius:10px;
-    background: linear-gradient(135deg,var(--accent1),var(--accent3));
-    display:flex;align-items:center;justify-content:center;
-    font-weight:700;color:#02101a; font-size:18px;
-    box-shadow: 0 10px 30px rgba(0,224,255,0.06);
-  }
-  .titles { line-height:1; }
-  .titles .t1 { font-size:16px; font-weight:700; color:#e8f6fb; }
-  .titles .t2 { font-size:12px; color:var(--muted); margin-top:2px; }
+/* tabs */
+.tabs{display:flex;gap:12px;justify-content:center;margin-bottom:16px}
+.tab{
+  flex:1;text-align:center;
+  padding:14px 0;border-radius:14px;cursor:pointer;color:var(--muted);font-weight:700;
+  transition:all .2s ease;border:1px solid transparent;background:transparent;font-size:18px;
+}
+.tab.active{
+  color:#eaf6fb;background: linear-gradient(90deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+  border:1px solid var(--glass-border);box-shadow:0 10px 30px rgba(0,200,255,0.06)
+}
 
-  /* tabs */
-  .tabs {
-    display:flex;
-    gap:8px;
-    justify-content:center;
-    margin-bottom:14px;
-    user-select:none;
-  }
-  .tab {
-    padding:8px 12px;
-    border-radius:12px;
-    cursor:pointer;
-    color:var(--muted);
-    font-weight:700;
-    letter-spacing:0.2px;
-    transition: all .22s cubic-bezier(.2,.9,.2,1);
-    background:transparent;
-    border:1px solid transparent;
-  }
-  .tab.active {
-    color:#fff;
-    background: linear-gradient(90deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
-    border:1px solid rgba(255,255,255,0.04);
-    box-shadow: 0 10px 30px rgba(106,156,255,0.04);
-  }
+/* content */
+.content{display:flex;flex-direction:column;gap:14px;flex:1;overflow:auto;padding-right:6px}
 
-  .content {
-    display:flex;
-    flex-direction:column;
-    gap:12px;
-    height: calc(100% - 120px);
-    overflow:auto;
-    padding-right:4px;
-  }
+/* card / glass */
+.card{
+  border-radius:var(--radius);padding:20px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.008));
+  border:1px solid var(--glass-border);box-shadow:0 12px 36px rgba(0,0,0,0.6);
+  backdrop-filter: blur(14px) saturate(130%);
+  display:flex;flex-direction:column;gap:14px;
+}
 
-  .card {
-    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-    border-radius: var(--card-radius);
-    padding:14px;
-    border:1px solid rgba(255,255,255,0.03);
-    box-shadow: 0 8px 30px rgba(2,6,23,0.5);
-    backdrop-filter: blur(8px) saturate(120%);
-  }
+/* labels & inputs */
+label{display:block;color:var(--muted);font-size:16px;margin-bottom:8px}
+input[type="number"]{
+  width:100%;padding:18px 20px;border-radius:14px;border:1px solid rgba(255,255,255,0.03);
+  background: rgba(255,255,255,0.02);color:#eaf6fb;font-size:20px;
+}
+input::placeholder{color: rgba(230,240,250,0.2)}
+input:focus{outline:none;box-shadow:0 14px 40px rgba(0,208,255,0.08);border-color:rgba(0,208,255,0.24)}
 
-  label { display:block; font-size:13px; color:var(--muted); margin-bottom:6px; }
-  input[type="number"]{
-    width:100%;
-    padding:12px 14px;
-    border-radius:10px;
-    border:1px solid rgba(255,255,255,0.03);
-    background: rgba(255,255,255,0.015);
-    color:#eef2f6;
-    font-size:16px;
-  }
-  input[type="number"]::placeholder{ color: rgba(230,240,250,0.18); }
+/* actions */
+.row{display:flex;gap:12px;margin-top:16px}
+.btn{
+  flex:1;padding:18px;border-radius:14px;border:none;cursor:pointer;font-weight:800;color:#001528;
+  background: linear-gradient(135deg,var(--accent),var(--accent-2));box-shadow:0 16px 48px rgba(0,208,255,0.08);
+  transition: transform .12s ease, box-shadow .12s ease;font-size:20px;
+}
+.btn:active{transform:translateY(1px)}
+.btn.ghost{
+  background:transparent;color:var(--muted);border:1px solid rgba(255,255,255,0.04);font-weight:700;font-size:18px
+}
+.btn.danger { background: linear-gradient(135deg,var(--danger), #ff8181); color:#200; box-shadow:0 14px 36px rgba(255,92,92,0.06) }
 
-  input[type="number"]:focus{
-    outline:none;
-    box-shadow: 0 10px 30px rgba(0,224,255,0.06);
-    border-color: rgba(0,224,255,0.3);
-  }
+/* results */
+.results{display:flex;flex-direction:column;gap:14px;margin-top:18px;flex-wrap:wrap}
+.result-block{
+  display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-radius:14px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.015), rgba(255,255,255,0.006));
+  border:1px solid rgba(255,255,255,0.02);transform:translateY(10px);opacity:0;transition:all .42s cubic-bezier(.2,.9,.2,1);font-size:18px
+}
+.result-block.show{transform:translateY(0);opacity:1}
+.r-label{color:var(--muted);font-size:16px}
+.r-value{font-family:var(--mono);font-weight:800;color:#dff8ff;font-size:20px}
 
-  .row { display:flex; gap:10px; }
-  .flex { flex:1; }
-
-  .actions { display:flex; gap:10px; margin-top:12px; }
-  .btn {
-    flex:1;
-    padding:12px;
-    border-radius:10px;
-    border:none;
-    cursor:pointer;
-    color:#01262a;
-    font-weight:800;
-    background: linear-gradient(135deg,var(--accent1),var(--accent2));
-    box-shadow: 0 12px 30px rgba(0,224,255,0.08);
-    transform: translateZ(0);
-    transition: transform .12s ease, box-shadow .12s ease;
-  }
-  .btn:active { transform: translateY(1px) scale(.998); }
-  .btn.ghost {
-    background: transparent;
-    color: var(--muted);
-    border: 1px solid rgba(255,255,255,0.04);
-    font-weight:700;
-  }
-
-  /* results */
-  .results { display:flex; flex-direction:column; gap:10px; margin-top:10px; }
-  .result-block {
-    display:flex; justify-content:space-between; align-items:center;
-    padding:10px 12px; border-radius:10px;
-    background: linear-gradient(180deg, rgba(255,255,255,0.014), rgba(255,255,255,0.008));
-    border:1px solid rgba(255,255,255,0.02);
-    transform: translateY(8px);
-    opacity:0; transition: all .45s cubic-bezier(.2,.9,.2,1);
-  }
-  .result-block.show { transform: translateY(0); opacity:1; }
-  .r-label{ color:var(--muted); font-size:13px }
-  .r-value{ font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", monospace; font-weight:800; font-size:16px; color:#e6fbff; }
-
-  /* floating clear */
-  .fab {
-    position:absolute; right:18px; bottom:18px;
-    width:56px;height:56px;border-radius:12px;border:none;
-    background: linear-gradient(135deg,var(--accent1),var(--accent2));
-    box-shadow: 0 16px 40px rgba(0,224,255,0.12);
-    display:flex;align-items:center;justify-content:center;cursor:pointer;
-  }
-
-  /* responsive */
-  @media (max-width:420px){
-    .app { padding:12px; border-radius:12px; }
-    .logo { width:40px;height:40px; font-size:16px; }
-    .tab { padding:8px 10px; font-size:14px; }
-  }
+/* floating clear-all */
+.fab{position:absolute;right:18px;bottom:18px;width:64px;height:64px;border-radius:16px;border:none;
+  background: linear-gradient(135deg,var(--accent),var(--accent-2));box-shadow:0 20px 60px rgba(0,208,255,0.1);cursor:pointer}
 </style>
 </head>
 <body>
-  <div class="app" role="application" aria-label="Калькулятори">
-    <div class="top">
-      <div class="brand">
-        <div class="logo">AK</div>
-        <div class="titles">
-          <div class="t1">Калькулятори</div>
-          <div class="t2">Вода · Брага</div>
-        </div>
-      </div>
-      <div style="font-size:12px;color:var(--muted)">&nbsp;</div>
-    </div>
+<div class="app">
+
+    <div class="header">Калькулятори спирту</div>
 
     <div class="tabs" role="tablist">
       <div class="tab active" id="tab-water" role="tab" onclick="switchTab('water')">💧 Вода</div>
@@ -227,20 +117,19 @@
     </div>
 
     <div class="content" id="content">
-
       <!-- WATER -->
       <div id="water" class="screen">
-        <div class="card">
-          <label for="w_start">Початкова міцність (%)</label>
-          <input id="w_start" type="number" step="0.1" inputmode="decimal">
+        <div class="card" aria-labelledby="tab-water">
+          <label for="w_A">Початкова міцність (%)</label>
+          <input id="w_A" type="number" step="0.1" inputmode="decimal" placeholder="0">
 
-          <label for="w_target">Бажана міцність (%)</label>
-          <input id="w_target" type="number" step="0.1" inputmode="decimal">
+          <label for="w_B">Бажана міцність (%)</label>
+          <input id="w_B" type="number" step="0.1" inputmode="decimal" placeholder="0">
 
-          <label for="w_volume">Обʼєм спирту (л)</label>
-          <input id="w_volume" type="number" step="0.01" inputmode="decimal">
+          <label for="w_V">Обʼєм спирту (л)</label>
+          <input id="w_V" type="number" step="0.01" inputmode="decimal" placeholder="0">
 
-          <div class="actions">
+          <div class="row">
             <button class="btn" onclick="calculateWater()">Розрахувати</button>
             <button class="btn ghost" onclick="clearWater()">Очистити</button>
           </div>
@@ -251,17 +140,17 @@
 
       <!-- BRAGA -->
       <div id="braga" class="screen" style="display:none">
-        <div class="card">
+        <div class="card" aria-labelledby="tab-braga">
           <label for="og_pct">OG — початкова (АЦ-2, %)</label>
-          <input id="og_pct" type="number" step="0.1" inputmode="decimal">
+          <input id="og_pct" type="number" step="0.1" inputmode="decimal" placeholder="0">
 
           <label for="fg_pct">FG — кінцева (АЦ-2, %)</label>
-          <input id="fg_pct" type="number" step="0.1" inputmode="decimal">
+          <input id="fg_pct" type="number" step="0.1" inputmode="decimal" placeholder="0">
 
-          <label for="braga_vol">Обʼєм браги (л)</label>
-          <input id="braga_vol" type="number" step="0.01" inputmode="decimal">
+          <label for="braga_V">Обʼєм браги (л)</label>
+          <input id="braga_V" type="number" step="0.01" inputmode="decimal" placeholder="0">
 
-          <div class="actions">
+          <div class="row">
             <button class="btn" onclick="calculateBraga()">Розрахувати</button>
             <button class="btn ghost" onclick="clearBraga()">Очистити</button>
           </div>
@@ -269,123 +158,97 @@
           <div class="results" id="braga_results" aria-live="polite"></div>
         </div>
       </div>
-
     </div>
 
-    <button class="fab" title="Очистити все" onclick="clearAll()" aria-label="Очистити все">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M3 6h18" stroke="#02101a" stroke-width="1.6" stroke-linecap="round"/><path d="M8 6v12a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2V6" stroke="#02101a" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M10 11v6" stroke="#02101a" stroke-width="1.6" stroke-linecap="round"/><path d="M14 11v6" stroke="#02101a" stroke-width="1.6" stroke-linecap="round"/></svg>
-    </button>
-  </div>
+    <button class="fab" title="Очистити все" onclick="clearAll()" aria-label="Очистити все">🧹</button>
+
+</div>
 
 <script>
-/* Tab switch */
 function switchTab(id){
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
   document.querySelectorAll('.screen').forEach(s=>s.style.display='none');
   document.getElementById('tab-' + id).classList.add('active');
   document.getElementById(id).style.display = 'block';
-  // clear previous results when switching
-  // optional: keep results — currently leave as-is
 }
 
-/* animate numeric value (requestAnimationFrame with easing) */
-function animateNumberTo(el, endValue, decimals=3, duration=700){
-  const start = parseFloat(el.textContent) || 0;
-  const startTime = performance.now();
+function animateValue(el, to, decimals=3, duration=700){
+  const from = parseFloat(el.textContent) || 0;
+  const start = performance.now();
   function frame(now){
-    const t = Math.min(1, (now - startTime)/duration);
-    const eased = 1 - Math.pow(1 - t, 3); // easeOutCubic
-    const current = start + (endValue - start) * eased;
+    const t = Math.min(1, (now - start)/duration);
+    const eased = 1 - Math.pow(1 - t, 3);
+    const current = from + (to - from) * eased;
     el.textContent = Number(current).toFixed(decimals);
     if (t < 1) requestAnimationFrame(frame);
   }
   requestAnimationFrame(frame);
 }
 
-/* create result block */
 function pushResult(container, label, value, decimals=3, delay=0){
   const block = document.createElement('div');
   block.className = 'result-block';
   block.innerHTML = `<div class="r-label">${label}</div><div class="r-value">0.${'0'.repeat(decimals)}</div>`;
   container.appendChild(block);
-  // reveal
-  setTimeout(()=> block.classList.add('show'), 40 + delay);
-  // animate number after small delay
+  setTimeout(()=> block.classList.add('show'), 50 + delay);
   setTimeout(()=> {
-    const valEl = block.querySelector('.r-value');
-    animateNumberTo(valEl, value, decimals);
-  }, 120 + delay);
+    const v = block.querySelector('.r-value');
+    animateValue(v, value, decimals);
+    block.scrollIntoView({behavior:'smooth', block:'center'});
+  }, 140 + delay);
   return block;
 }
 
-/* CLEAR helpers */
-function clearWater(){
-  document.getElementById('w_start').value = '';
-  document.getElementById('w_target').value = '';
-  document.getElementById('w_volume').value = '';
-  document.getElementById('water_results').innerHTML = '';
-}
-function clearBraga(){
-  document.getElementById('og_pct').value = '';
-  document.getElementById('fg_pct').value = '';
-  document.getElementById('braga_vol').value = '';
-  document.getElementById('braga_results').innerHTML = '';
-}
-function clearAll(){ clearWater(); clearBraga(); }
+function clearWater(){document.getElementById('w_A').value='';document.getElementById('w_B').value='';document.getElementById('w_V').value='';document.getElementById('water_results').innerHTML='';}
+function clearBraga(){document.getElementById('og_pct').value='';document.getElementById('fg_pct').value='';document.getElementById('braga_V').value='';document.getElementById('braga_results').innerHTML='';}
+function clearAll(){clearWater(); clearBraga();}
 
-/* CALCULATE WATER */
+/* WATER calculation */
 function calculateWater(){
-  const S = parseFloat(document.getElementById('w_start').value);
-  const T = parseFloat(document.getElementById('w_target').value);
-  const V = parseFloat(document.getElementById('w_volume').value);
+  const A = parseFloat(document.getElementById('w_A').value);
+  const B = parseFloat(document.getElementById('w_B').value);
+  const V = parseFloat(document.getElementById('w_V').value);
   const container = document.getElementById('water_results');
-  container.innerHTML = '';
+  container.innerHTML='';
 
-  if (isNaN(S) || isNaN(T) || isNaN(V) || S <= 0 || T <= 0 || V <= 0 || S <= T){
+  if (isNaN(A) || isNaN(B) || isNaN(V) || A <= 0 || B <= 0 || V <= 0 || B >= A){
     const err = document.createElement('div');
     err.className='result-block show';
     err.innerHTML = `<div class="r-label">Помилка</div><div class="r-value">Перевірте значення</div>`;
     container.appendChild(err);
+    err.scrollIntoView({behavior:'smooth', block:'center'});
     return;
   }
 
-  // calculation: water = V * (S/T - 1)
-  const water = V * (S / T - 1);
+  const water = V * (A / B - 1);
   const finalVol = V + water;
-  const pure = V * (S/100); // liters pure ethanol (alternative useful)
-
+  const pure = V * (A/100);
   pushResult(container, 'Додати води (л)', water, 3, 0);
   pushResult(container, 'Кінцевий обʼєм (л)', finalVol, 3, 120);
   pushResult(container, 'Чистий спирт (л)', pure, 3, 240);
 }
 
-/* CALCULATE BRAGA */
+/* BRAGA calculation */
 function calculateBraga(){
   const OG_pct = parseFloat(document.getElementById('og_pct').value);
   const FG_pct = parseFloat(document.getElementById('fg_pct').value);
-  const V = parseFloat(document.getElementById('braga_vol').value);
+  const V = parseFloat(document.getElementById('braga_V').value);
   const container = document.getElementById('braga_results');
-  container.innerHTML = '';
+  container.innerHTML='';
 
-  if (isNaN(OG_pct) || isNaN(FG_pct) || isNaN(V) || OG_pct <= 0 || V <= 0 || OG_pct <= FG_pct){
+  if (isNaN(OG_pct) || isNaN(FG_pct) || isNaN(V) || OG_pct <= 0 || FG_pct < 0 || V <= 0 || OG_pct <= FG_pct){
     const err = document.createElement('div');
     err.className='result-block show';
     err.innerHTML = `<div class="r-label">Помилка</div><div class="r-value">Перевірте значення</div>`;
     container.appendChild(err);
+    err.scrollIntoView({behavior:'smooth', block:'center'});
     return;
   }
 
-  // convert AЦ-2 (%) to SG: SG = 1 + pct / 258
   const OG = 1 + OG_pct / 258;
   const FG = 1 + FG_pct / 258;
-
-  // ABV
   const ABV = (OG - FG) * 131.25;
-
-  // absolute ethanol (liters)
   const abs = V * (ABV / 100);
-
-  // raw spirit volumes when diluted to 40% and 43%
   const s40 = abs / 0.40;
   const s43 = abs / 0.43;
 
@@ -393,26 +256,6 @@ function calculateBraga(){
   pushResult(container, 'Абсолютний спирт (л)', abs, 4, 120);
   pushResult(container, 'Сирець 40% (л)', s40, 3, 240);
   pushResult(container, 'Сирець 43% (л)', s43, 3, 360);
-}
-
-/* keyboard accessibility: switch tabs with left/right */
-document.addEventListener('keydown', (e)=>{
-  if (e.key === 'ArrowLeft' || e.key === 'ArrowRight'){
-    const tabs = Array.from(document.querySelectorAll('.tab'));
-    const activeIndex = tabs.findIndex(t => t.classList.contains('active'));
-    let next = activeIndex;
-    if (e.key === 'ArrowLeft') next = Math.max(0, activeIndex - 1);
-    if (e.key === 'ArrowRight') next = Math.min(tabs.length - 1, activeIndex + 1);
-    const id = tabs[next].id.replace('tab-','');
-    switchTab(id);
-  }
-});
-
-function switchTab(id){
-  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-  document.querySelectorAll('.screen').forEach(s=>s.style.display='none');
-  document.getElementById('tab-' + id).classList.add('active');
-  document.getElementById(id).style.display = 'block';
 }
 </script>
 </body>
