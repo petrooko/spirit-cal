@@ -1,159 +1,418 @@
 <!DOCTYPE html>
 <html lang="uk">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Калькулятор розбавлення води</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+<title>Калькулятори — Вода & Брага</title>
 
-<!-- Іконка для домашнього екрану -->
+<!-- Іконки / PWA-ish -->
 <link rel="apple-touch-icon" sizes="512x512" href="icon.png">
 <link rel="icon" href="icon.png">
-
-<!-- Мета-теги для повноекранного режиму -->
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Калькулятор води">
-<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="Калькулятори" />
+<meta name="mobile-web-app-capable" content="yes" />
 
 <style>
-body {
-    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-    background: #1c1c1e;
-    color: #f5f5f7;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    margin: 0;
-}
-.container {
-    background: #2c2c2e;
-    padding: 25px;
-    border-radius: 20px;
-    box-shadow: 0 6px 25px rgba(0,0,0,0.5);
-    width: 90%;
-    max-width: 400px;
-    text-align: center;
-}
-h1 {
-    margin-bottom: 20px;
-}
-input {
-    width: 90%;
-    padding: 15px;
-    margin: 12px 0;
-    border-radius: 12px;
-    border: 1px solid #444;
-    font-size: 20px;
-    background: #1c1c1e;
-    color: #f5f5f7;
-    transition: box-shadow 0.3s, border-color 0.3s;
-}
-input:focus {
-    border-color: #0a84ff;
-    box-shadow: 0 0 8px rgba(10,132,255,0.5);
-    outline: none;
-}
-button {
-    width: 95%;
-    padding: 18px;
-    background: linear-gradient(135deg, #0a84ff, #5ac8fa);
-    color: #fff;
-    border: none;
-    border-radius: 15px;
-    font-size: 20px;
-    margin-top: 15px;
-    cursor: pointer;
-    transition: all 0.3s;
-}
-button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(0,0,0,0.6);
-}
-.result-block {
-    background: #29292c;
-    border-radius: 14px;
-    padding: 12px 20px;
-    margin: 10px 0;
-    font-size: 18px;
-    display: flex;
-    justify-content: space-between;
-    opacity: 0;
-    transform: translateY(20px);
-    transition: all 0.6s ease;
-}
-.result-block.show {
-    opacity: 1;
-    transform: translateY(0);
-}
-.result-label {
-    font-weight: 500;
-}
-.result-value {
-    font-family: monospace;
-    font-weight: bold;
-}
+  :root{
+    --bg1:#071122;
+    --bg2:#0e1624;
+    --glass: rgba(255,255,255,0.04);
+    --muted: rgba(255,255,255,0.65);
+    --accent1:#00e0ff;
+    --accent2:#00b894;
+    --accent3:#6a9cff;
+    --card-radius:14px;
+  }
+
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial;color:#eef2f6;}
+  body{
+    background: linear-gradient(120deg,var(--bg1),var(--bg2));
+    overflow:hidden;
+    -webkit-font-smoothing:antialiased;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:18px;
+  }
+
+  /* animated gradient overlay */
+  body::before{
+    content:"";
+    position:fixed; inset:0; z-index:-2;
+    background: linear-gradient(60deg, rgba(0,224,255,0.06), rgba(106,156,255,0.04), rgba(0,184,148,0.03));
+    mix-blend-mode: screen;
+    background-size: 300% 300%;
+    animation: moveBG 12s linear infinite;
+  }
+  @keyframes moveBG{
+    0%{background-position:0% 50%}
+    50%{background-position:100% 50%}
+    100%{background-position:0% 50%}
+  }
+
+  /* App shell */
+  .app {
+    width:100%;
+    max-width:440px;
+    min-height:460px;
+    border-radius:18px;
+    padding:16px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    box-shadow: 0 14px 50px rgba(2,6,23,0.7);
+    position:relative;
+    overflow:hidden;
+    border: 1px solid rgba(255,255,255,0.03);
+  }
+
+  /* header */
+  .top {
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    margin-bottom:12px;
+  }
+  .brand {
+    display:flex;
+    gap:12px;
+    align-items:center;
+  }
+  .logo {
+    width:46px;height:46px;border-radius:10px;
+    background: linear-gradient(135deg,var(--accent1),var(--accent3));
+    display:flex;align-items:center;justify-content:center;
+    font-weight:700;color:#02101a; font-size:18px;
+    box-shadow: 0 10px 30px rgba(0,224,255,0.06);
+  }
+  .titles { line-height:1; }
+  .titles .t1 { font-size:16px; font-weight:700; color:#e8f6fb; }
+  .titles .t2 { font-size:12px; color:var(--muted); margin-top:2px; }
+
+  /* tabs */
+  .tabs {
+    display:flex;
+    gap:8px;
+    justify-content:center;
+    margin-bottom:14px;
+    user-select:none;
+  }
+  .tab {
+    padding:8px 12px;
+    border-radius:12px;
+    cursor:pointer;
+    color:var(--muted);
+    font-weight:700;
+    letter-spacing:0.2px;
+    transition: all .22s cubic-bezier(.2,.9,.2,1);
+    background:transparent;
+    border:1px solid transparent;
+  }
+  .tab.active {
+    color:#fff;
+    background: linear-gradient(90deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
+    border:1px solid rgba(255,255,255,0.04);
+    box-shadow: 0 10px 30px rgba(106,156,255,0.04);
+  }
+
+  .content {
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+    height: calc(100% - 120px);
+    overflow:auto;
+    padding-right:4px;
+  }
+
+  .card {
+    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    border-radius: var(--card-radius);
+    padding:14px;
+    border:1px solid rgba(255,255,255,0.03);
+    box-shadow: 0 8px 30px rgba(2,6,23,0.5);
+    backdrop-filter: blur(8px) saturate(120%);
+  }
+
+  label { display:block; font-size:13px; color:var(--muted); margin-bottom:6px; }
+  input[type="number"]{
+    width:100%;
+    padding:12px 14px;
+    border-radius:10px;
+    border:1px solid rgba(255,255,255,0.03);
+    background: rgba(255,255,255,0.015);
+    color:#eef2f6;
+    font-size:16px;
+  }
+  input[type="number"]::placeholder{ color: rgba(230,240,250,0.18); }
+
+  input[type="number"]:focus{
+    outline:none;
+    box-shadow: 0 10px 30px rgba(0,224,255,0.06);
+    border-color: rgba(0,224,255,0.3);
+  }
+
+  .row { display:flex; gap:10px; }
+  .flex { flex:1; }
+
+  .actions { display:flex; gap:10px; margin-top:12px; }
+  .btn {
+    flex:1;
+    padding:12px;
+    border-radius:10px;
+    border:none;
+    cursor:pointer;
+    color:#01262a;
+    font-weight:800;
+    background: linear-gradient(135deg,var(--accent1),var(--accent2));
+    box-shadow: 0 12px 30px rgba(0,224,255,0.08);
+    transform: translateZ(0);
+    transition: transform .12s ease, box-shadow .12s ease;
+  }
+  .btn:active { transform: translateY(1px) scale(.998); }
+  .btn.ghost {
+    background: transparent;
+    color: var(--muted);
+    border: 1px solid rgba(255,255,255,0.04);
+    font-weight:700;
+  }
+
+  /* results */
+  .results { display:flex; flex-direction:column; gap:10px; margin-top:10px; }
+  .result-block {
+    display:flex; justify-content:space-between; align-items:center;
+    padding:10px 12px; border-radius:10px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.014), rgba(255,255,255,0.008));
+    border:1px solid rgba(255,255,255,0.02);
+    transform: translateY(8px);
+    opacity:0; transition: all .45s cubic-bezier(.2,.9,.2,1);
+  }
+  .result-block.show { transform: translateY(0); opacity:1; }
+  .r-label{ color:var(--muted); font-size:13px }
+  .r-value{ font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", monospace; font-weight:800; font-size:16px; color:#e6fbff; }
+
+  /* floating clear */
+  .fab {
+    position:absolute; right:18px; bottom:18px;
+    width:56px;height:56px;border-radius:12px;border:none;
+    background: linear-gradient(135deg,var(--accent1),var(--accent2));
+    box-shadow: 0 16px 40px rgba(0,224,255,0.12);
+    display:flex;align-items:center;justify-content:center;cursor:pointer;
+  }
+
+  /* responsive */
+  @media (max-width:420px){
+    .app { padding:12px; border-radius:12px; }
+    .logo { width:40px;height:40px; font-size:16px; }
+    .tab { padding:8px 10px; font-size:14px; }
+  }
 </style>
 </head>
 <body>
-<div class="container">
-    <h1>Калькулятор води</h1>
-    <input id="A" type="number" step="0.1" min="0.1" placeholder="Початкова міцність (%)" inputmode="decimal">
-    <input id="B" type="number" step="0.1" min="0.1" placeholder="Бажана міцність (%)" inputmode="decimal">
-    <input id="V" type="number" step="0.01" min="0.01" placeholder="Обʼєм спирту (л)" inputmode="decimal">
-    <button onclick="calculate()">Розрахувати</button>
-    <div id="result"></div>
-</div>
+  <div class="app" role="application" aria-label="Калькулятори">
+    <div class="top">
+      <div class="brand">
+        <div class="logo">AK</div>
+        <div class="titles">
+          <div class="t1">Калькулятори</div>
+          <div class="t2">Вода · Брага</div>
+        </div>
+      </div>
+      <div style="font-size:12px;color:var(--muted)">&nbsp;</div>
+    </div>
+
+    <div class="tabs" role="tablist">
+      <div class="tab active" id="tab-water" role="tab" onclick="switchTab('water')">💧 Вода</div>
+      <div class="tab" id="tab-braga" role="tab" onclick="switchTab('braga')">🍺 Брага</div>
+    </div>
+
+    <div class="content" id="content">
+
+      <!-- WATER -->
+      <div id="water" class="screen">
+        <div class="card">
+          <label for="w_start">Початкова міцність (%)</label>
+          <input id="w_start" type="number" step="0.1" inputmode="decimal">
+
+          <label for="w_target">Бажана міцність (%)</label>
+          <input id="w_target" type="number" step="0.1" inputmode="decimal">
+
+          <label for="w_volume">Обʼєм спирту (л)</label>
+          <input id="w_volume" type="number" step="0.01" inputmode="decimal">
+
+          <div class="actions">
+            <button class="btn" onclick="calculateWater()">Розрахувати</button>
+            <button class="btn ghost" onclick="clearWater()">Очистити</button>
+          </div>
+
+          <div class="results" id="water_results" aria-live="polite"></div>
+        </div>
+      </div>
+
+      <!-- BRAGA -->
+      <div id="braga" class="screen" style="display:none">
+        <div class="card">
+          <label for="og_pct">OG — початкова (АЦ-2, %)</label>
+          <input id="og_pct" type="number" step="0.1" inputmode="decimal">
+
+          <label for="fg_pct">FG — кінцева (АЦ-2, %)</label>
+          <input id="fg_pct" type="number" step="0.1" inputmode="decimal">
+
+          <label for="braga_vol">Обʼєм браги (л)</label>
+          <input id="braga_vol" type="number" step="0.01" inputmode="decimal">
+
+          <div class="actions">
+            <button class="btn" onclick="calculateBraga()">Розрахувати</button>
+            <button class="btn ghost" onclick="clearBraga()">Очистити</button>
+          </div>
+
+          <div class="results" id="braga_results" aria-live="polite"></div>
+        </div>
+      </div>
+
+    </div>
+
+    <button class="fab" title="Очистити все" onclick="clearAll()" aria-label="Очистити все">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M3 6h18" stroke="#02101a" stroke-width="1.6" stroke-linecap="round"/><path d="M8 6v12a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2V6" stroke="#02101a" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M10 11v6" stroke="#02101a" stroke-width="1.6" stroke-linecap="round"/><path d="M14 11v6" stroke="#02101a" stroke-width="1.6" stroke-linecap="round"/></svg>
+    </button>
+  </div>
 
 <script>
-function animateNumber(element, value, duration = 800) {
-    let start = 0;
-    const stepTime = 16;
-    const steps = Math.ceil(duration / stepTime);
-    const increment = value / steps;
-    let currentStep = 0;
-    return new Promise(resolve => {
-        const timer = setInterval(() => {
-            currentStep++;
-            start += increment;
-            element.textContent = start.toFixed(3);
-            if (currentStep >= steps) {
-                element.textContent = value.toFixed(3);
-                clearInterval(timer);
-                resolve();
-            }
-        }, stepTime);
-    });
+/* Tab switch */
+function switchTab(id){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.screen').forEach(s=>s.style.display='none');
+  document.getElementById('tab-' + id).classList.add('active');
+  document.getElementById(id).style.display = 'block';
+  // clear previous results when switching
+  // optional: keep results — currently leave as-is
 }
 
-async function calculate() {
-    const A = parseFloat(document.getElementById('A').value);
-    const B = parseFloat(document.getElementById('B').value);
-    const V = parseFloat(document.getElementById('V').value);
-    const resultDiv = document.getElementById('result');
-    resultDiv.innerHTML = '';
+/* animate numeric value (requestAnimationFrame with easing) */
+function animateNumberTo(el, endValue, decimals=3, duration=700){
+  const start = parseFloat(el.textContent) || 0;
+  const startTime = performance.now();
+  function frame(now){
+    const t = Math.min(1, (now - startTime)/duration);
+    const eased = 1 - Math.pow(1 - t, 3); // easeOutCubic
+    const current = start + (endValue - start) * eased;
+    el.textContent = Number(current).toFixed(decimals);
+    if (t < 1) requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+}
 
-    if (!A || !B || !V) {
-        resultDiv.innerHTML = "<div class='result-block show'>Заповніть всі поля!</div>";
-        return;
-    }
-    if (A <= B) {
-        resultDiv.innerHTML = "<div class='result-block show'>Початкова міцність повинна бути більшою за бажану!</div>";
-        return;
-    }
+/* create result block */
+function pushResult(container, label, value, decimals=3, delay=0){
+  const block = document.createElement('div');
+  block.className = 'result-block';
+  block.innerHTML = `<div class="r-label">${label}</div><div class="r-value">0.${'0'.repeat(decimals)}</div>`;
+  container.appendChild(block);
+  // reveal
+  setTimeout(()=> block.classList.add('show'), 40 + delay);
+  // animate number after small delay
+  setTimeout(()=> {
+    const valEl = block.querySelector('.r-value');
+    animateNumberTo(valEl, value, decimals);
+  }, 120 + delay);
+  return block;
+}
 
-    // Розрахунок кількості води
-    const water = V * (A / B - 1);
+/* CLEAR helpers */
+function clearWater(){
+  document.getElementById('w_start').value = '';
+  document.getElementById('w_target').value = '';
+  document.getElementById('w_volume').value = '';
+  document.getElementById('water_results').innerHTML = '';
+}
+function clearBraga(){
+  document.getElementById('og_pct').value = '';
+  document.getElementById('fg_pct').value = '';
+  document.getElementById('braga_vol').value = '';
+  document.getElementById('braga_results').innerHTML = '';
+}
+function clearAll(){ clearWater(); clearBraga(); }
 
-    const block = document.createElement('div');
-    block.className = 'result-block';
-    block.innerHTML = `<span class="result-label">Потрібно додати води (л)</span><span class="result-value">0.000</span>`;
-    resultDiv.appendChild(block);
+/* CALCULATE WATER */
+function calculateWater(){
+  const S = parseFloat(document.getElementById('w_start').value);
+  const T = parseFloat(document.getElementById('w_target').value);
+  const V = parseFloat(document.getElementById('w_volume').value);
+  const container = document.getElementById('water_results');
+  container.innerHTML = '';
 
-    await new Promise(resolve => setTimeout(resolve, 100));
-    block.classList.add('show');
-    const valueElement = block.querySelector('.result-value');
-    await animateNumber(valueElement, water);
+  if (isNaN(S) || isNaN(T) || isNaN(V) || S <= 0 || T <= 0 || V <= 0 || S <= T){
+    const err = document.createElement('div');
+    err.className='result-block show';
+    err.innerHTML = `<div class="r-label">Помилка</div><div class="r-value">Перевірте значення</div>`;
+    container.appendChild(err);
+    return;
+  }
+
+  // calculation: water = V * (S/T - 1)
+  const water = V * (S / T - 1);
+  const finalVol = V + water;
+  const pure = V * (S/100); // liters pure ethanol (alternative useful)
+
+  pushResult(container, 'Додати води (л)', water, 3, 0);
+  pushResult(container, 'Кінцевий обʼєм (л)', finalVol, 3, 120);
+  pushResult(container, 'Чистий спирт (л)', pure, 3, 240);
+}
+
+/* CALCULATE BRAGA */
+function calculateBraga(){
+  const OG_pct = parseFloat(document.getElementById('og_pct').value);
+  const FG_pct = parseFloat(document.getElementById('fg_pct').value);
+  const V = parseFloat(document.getElementById('braga_vol').value);
+  const container = document.getElementById('braga_results');
+  container.innerHTML = '';
+
+  if (isNaN(OG_pct) || isNaN(FG_pct) || isNaN(V) || OG_pct <= 0 || V <= 0 || OG_pct <= FG_pct){
+    const err = document.createElement('div');
+    err.className='result-block show';
+    err.innerHTML = `<div class="r-label">Помилка</div><div class="r-value">Перевірте значення</div>`;
+    container.appendChild(err);
+    return;
+  }
+
+  // convert AЦ-2 (%) to SG: SG = 1 + pct / 258
+  const OG = 1 + OG_pct / 258;
+  const FG = 1 + FG_pct / 258;
+
+  // ABV
+  const ABV = (OG - FG) * 131.25;
+
+  // absolute ethanol (liters)
+  const abs = V * (ABV / 100);
+
+  // raw spirit volumes when diluted to 40% and 43%
+  const s40 = abs / 0.40;
+  const s43 = abs / 0.43;
+
+  pushResult(container, 'ABV браги (%)', ABV, 3, 0);
+  pushResult(container, 'Абсолютний спирт (л)', abs, 4, 120);
+  pushResult(container, 'Сирець 40% (л)', s40, 3, 240);
+  pushResult(container, 'Сирець 43% (л)', s43, 3, 360);
+}
+
+/* keyboard accessibility: switch tabs with left/right */
+document.addEventListener('keydown', (e)=>{
+  if (e.key === 'ArrowLeft' || e.key === 'ArrowRight'){
+    const tabs = Array.from(document.querySelectorAll('.tab'));
+    const activeIndex = tabs.findIndex(t => t.classList.contains('active'));
+    let next = activeIndex;
+    if (e.key === 'ArrowLeft') next = Math.max(0, activeIndex - 1);
+    if (e.key === 'ArrowRight') next = Math.min(tabs.length - 1, activeIndex + 1);
+    const id = tabs[next].id.replace('tab-','');
+    switchTab(id);
+  }
+});
+
+function switchTab(id){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.screen').forEach(s=>s.style.display='none');
+  document.getElementById('tab-' + id).classList.add('active');
+  document.getElementById(id).style.display = 'block';
 }
 </script>
 </body>
